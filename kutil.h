@@ -79,7 +79,7 @@ extern "C" {
 };
 
 namespace kutil {
-	KLDR_DATA_TABLE_ENTRY* get_module_entry(const wchar_t* module_name) {
+	inline KLDR_DATA_TABLE_ENTRY* get_module_entry(const wchar_t* module_name) {
 		if (!PsLoadedModuleList || !module_name)
 			return nullptr;
 
@@ -101,7 +101,7 @@ namespace kutil {
 		return nullptr;
 	}
 
-	KLDR_DATA_TABLE_ENTRY* get_module_entry(const u64 module_base) {
+	inline KLDR_DATA_TABLE_ENTRY* get_module_entry(const u64 module_base) {
 		if (!PsLoadedModuleList || !module_base)
 			return nullptr;
 
@@ -120,7 +120,7 @@ namespace kutil {
 		return nullptr;
 	}
 
-	PDRIVER_OBJECT get_driver_object(const wchar_t* object_name) {
+	inline PDRIVER_OBJECT get_driver_object(const wchar_t* object_name) {
 		if (!object_name)
 			return nullptr;
 
@@ -139,7 +139,7 @@ namespace kutil {
 		return device_object->DriverObject;
 	}
 
-	u64 get_module_base(const wchar_t* module_name) {
+	inline u64 get_module_base(const wchar_t* module_name) {
 		if (!module_name)
 			return 0;
 
@@ -150,7 +150,7 @@ namespace kutil {
 		return entry->image_base;
 	}
 
-	bool is_inside_module(const wchar_t* module_name, u64 address) {
+	inline bool is_inside_module(const wchar_t* module_name, u64 address) {
 		if (!module_name || !address)
 			return false;
 
@@ -164,7 +164,7 @@ namespace kutil {
 		return address >= base && address < end;
 	}
 
-	bool is_inside_module(u64 module_address, u32 module_size, u64 address) {
+	inline bool is_inside_module(u64 module_address, u32 module_size, u64 address) {
 		if (!module_address || !module_size || !address)
 			return false;
 
@@ -174,7 +174,7 @@ namespace kutil {
 		return address >= base && address < end;
 	}
 
-	bool is_inside_module(u64 address) {
+	inline bool is_inside_module(u64 address) {
 		if (!address)
 			return false;
 
@@ -196,7 +196,7 @@ namespace kutil {
 		return false;
 	}
 
-	UNICODE_STRING get_module(u64 address) {
+	inline UNICODE_STRING get_module(u64 address) {
 		if (!PsLoadedModuleList)
 			return { 0 };
 
@@ -221,7 +221,7 @@ namespace kutil {
 	}
 
 
-	NTSTATUS dump_memory_to_disk(u64 address, u32 size, const wchar_t* file_path) {
+	inline NTSTATUS dump_memory_to_disk(u64 address, u32 size, const wchar_t* file_path) {
 		if (!address || !size || !file_path)
 			return STATUS_INVALID_PARAMETER;
 
@@ -255,13 +255,14 @@ namespace kutil {
 			(PVOID)address,
 			size,
 			NULL,
-			NULL);
+			NULL
+		);
 
 		ZwClose(file_handle);
 		return status;
 	}
 
-	u64 get_kernel_base() {
+	inline u64 get_kernel_base() {
 		if (!PsLoadedModuleList)
 			return 0;
 
@@ -272,7 +273,7 @@ namespace kutil {
 		return entry->image_base;
 	}
 
-	u32 get_kernel_size() {
+	inline u32 get_kernel_size() {
 		if (!PsLoadedModuleList)
 			return 0;
 
@@ -283,7 +284,7 @@ namespace kutil {
 		return entry->image_size;
 	}
 
-	u64 get_routine(const wchar_t* routine_name) {
+	inline u64 get_routine(const wchar_t* routine_name) {
 		if (!routine_name)
 			return 0;
 
@@ -292,7 +293,7 @@ namespace kutil {
 		return (u64)MmGetSystemRoutineAddress(&routine_string);
 	}
 
-	u64 get_exported_routine(const wchar_t* module_name, const char* routine_name) {
+	inline u64 get_exported_routine(const wchar_t* module_name, const char* routine_name) {
 		if (!module_name || !routine_name)
 			return 0;
 
@@ -303,7 +304,7 @@ namespace kutil {
 		return RtlFindExportedRoutineByName(entry->image_base, routine_name);
 	}
 
-	u64 get_exported_routine(const u64 module_base, const char* routine_name) {
+	inline u64 get_exported_routine(const u64 module_base, const char* routine_name) {
 		if (!module_base || !routine_name)
 			return 0;
 
@@ -314,7 +315,7 @@ namespace kutil {
 		return RtlFindExportedRoutineByName(entry->image_base, routine_name);
 	}
 
-	u64 get_process_base(u32 pid) {
+	inline u64 get_process_base(u32 pid) {
 		if (!pid)
 			return 0;
 
@@ -329,7 +330,7 @@ namespace kutil {
 		return 0;
 	}
 
-	u64 get_process_peb(u32 pid) {
+	inline u64 get_process_peb(u32 pid) {
 		if (!pid)
 			return 0;
 
@@ -344,7 +345,7 @@ namespace kutil {
 		return 0;
 	}
 
-	PEPROCESS get_process(const wchar_t* process_name) {
+	inline PEPROCESS get_process(const wchar_t* process_name) {
 		if (!process_name)
 			return nullptr;
 
@@ -369,7 +370,7 @@ namespace kutil {
 		return nullptr;
 	}
 
-	u64 signature_scan(u64 base_address, u32 scan_region, const char* pattern, const char* mask) {
+	inline u64 signature_scan(u64 base_address, u32 scan_region, const char* pattern, const char* mask) {
 		if (!base_address || !scan_region || !pattern || !mask)
 			return 0;
 
@@ -398,7 +399,7 @@ namespace kutil {
 		return 0;
 	}
 
-	u64 signature_scan(u64 base_address, const char* section_name, const char* pattern, const char* mask) {
+	inline u64 signature_scan(u64 base_address, const char* section_name, const char* pattern, const char* mask) {
 		if (!base_address || !section_name || !pattern || !mask)
 			return 0;
 
@@ -443,14 +444,14 @@ namespace kutil {
 		return 0;
 	}
 
-	void sleep(u32 milliseconds) {
+	inline void sleep(u32 milliseconds) {
 		LARGE_INTEGER timeout = { 0 };
 		timeout.QuadPart = -(milliseconds * 10 * 1000);
 		KeDelayExecutionThread(KernelMode, FALSE, &timeout);
 	}
 
 	namespace pe {
-		PIMAGE_DOS_HEADER get_dos_header(u64 base_address) {
+		inline PIMAGE_DOS_HEADER get_dos_header(u64 base_address) {
 			if (!base_address)
 				return nullptr;
 
@@ -461,7 +462,7 @@ namespace kutil {
 			return dos_header;
 		}
 
-		PIMAGE_NT_HEADERS32 get_nt_header_32(u64 base_address) {
+		inline PIMAGE_NT_HEADERS32 get_nt_header_32(u64 base_address) {
 			if (!base_address)
 				return nullptr;
 
@@ -479,7 +480,7 @@ namespace kutil {
 			return nt_header;
 		}
 
-		PIMAGE_NT_HEADERS32 get_nt_header_32(PIMAGE_DOS_HEADER dos_header) {
+		inline PIMAGE_NT_HEADERS32 get_nt_header_32(PIMAGE_DOS_HEADER dos_header) {
 			if (!dos_header || dos_header->e_magic != IMAGE_DOS_SIGNATURE)
 				return nullptr;
 
@@ -493,7 +494,7 @@ namespace kutil {
 			return nt_header;
 		}
 
-		PIMAGE_NT_HEADERS64 get_nt_header_64(u64 base_address) {
+		inline PIMAGE_NT_HEADERS64 get_nt_header_64(u64 base_address) {
 			if (!base_address)
 				return nullptr;
 
@@ -511,7 +512,7 @@ namespace kutil {
 			return nt_header;
 		}
 
-		PIMAGE_NT_HEADERS64 get_nt_header_64(PIMAGE_DOS_HEADER dos_header) {
+		inline PIMAGE_NT_HEADERS64 get_nt_header_64(PIMAGE_DOS_HEADER dos_header) {
 			if (!dos_header || dos_header->e_magic != IMAGE_DOS_SIGNATURE)
 				return nullptr;
 
@@ -525,7 +526,7 @@ namespace kutil {
 			return nt_header;
 		}
 
-		PIMAGE_SECTION_HEADER get_image_section(u64 base_address, const char* section_name) {
+		inline PIMAGE_SECTION_HEADER get_image_section(u64 base_address, const char* section_name) {
 			if (!base_address || !section_name)
 				return nullptr;
 
@@ -554,7 +555,7 @@ namespace kutil {
 			return nullptr;
 		}
 
-		PIMAGE_SECTION_HEADER get_image_section(PIMAGE_DOS_HEADER dos_header, const char* section_name) {
+		inline PIMAGE_SECTION_HEADER get_image_section(PIMAGE_DOS_HEADER dos_header, const char* section_name) {
 			if (!dos_header || !section_name || dos_header->e_magic != IMAGE_DOS_SIGNATURE)
 				return nullptr;
 
